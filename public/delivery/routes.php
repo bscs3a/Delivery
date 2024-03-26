@@ -11,6 +11,7 @@ $dlv = [
     '/dlv/history' => $basePath . "history.php",
     '/dlv/req' => $basePath . "expenses-req.php",
     '/dlv/assign' => $basePath . "assign.php",
+    '/dlv/orderlist' => $basePath . "orderlist.php",
     
     // For page with ID
     '/dlv/viewdetails/id={id}' => function($id) use ($basePath) {

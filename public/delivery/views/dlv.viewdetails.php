@@ -94,7 +94,7 @@ if ($conn === null) {
             <div class="h-auto p4 rounded-2xl shadow-xl" style="background-color: #262261;">
                 <div class="flex justify-between items-center">
                     <h1 class="pt-3 pr-4 pl-4 pb-3 text-lg font-bold text-white">Order Details</h1>
-                    <button route='/dlv/list' class="bg-blue-500 hover:bg-blue-700 text-xs text-white font-bold py-1 px-4 rounded-2xl mr-4">
+                    <button route='/dlv/orderlist' class="bg-blue-500 hover:bg-blue-700 text-xs text-white font-bold py-1 px-4 rounded-2xl mr-4">
                         Close
                     </button>
                 </div>
@@ -108,7 +108,7 @@ if ($conn === null) {
                             </tr>
                             <tr>
                                 <td class="border font-bold px-4 py-2" style="width: 30%;">Sale ID</td>
-                                <td class="border px-4 py-2" style="width: 70%;"><?php echo $order['SaleID']; ?></td>
+                                <td class="border px-4 py-2" style="width: 70%;">#<?php echo $order['SaleID']; ?></td>
                             </tr>
                             <tr>
                                 <td class="border font-bold px-4 py-2" style="width: 30%;">Customer ID</td>
@@ -136,10 +136,10 @@ if ($conn === null) {
                             </tr>
                             <tr>
                                 <td class="border font-bold px-4 py-2" style="width: 30%;">Product ID</td>
-                                <td class="border px-4 py-2" style="width: 70%;">#<?php echo $order['ProductID']; ?></td>
+                                <td class="border px-4 py-2" style="width: 70%;"><?php echo $order['ProductID']; ?></td>
                             </tr>
                             <tr>
-                                <td class="border font-bold px-4 py-2" style="width: 30%;">Product ID</td>
+                                <td class="border font-bold px-4 py-2" style="width: 30%;">Product Name</td>
                                 <td class="border px-4 py-2" style="width: 70%;"><?php echo $order['ProductName']; ?></td>
                             </tr>
                             <tr>

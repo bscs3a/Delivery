@@ -8,27 +8,27 @@ if ($conn === null) {
     die('Failed to connect to the database.');
 }
 ?>
-        
-<?php
-        // query for delivery orders where is not delivered status
-$query = "SELECT * FROM deliveryorders WHERE DeliveryStatus != 'Delivered'";
 
-$result = $conn->query($query);
-?>
+<!-- 
+// to display truck with Intransit status
+$query = $conn->prepare("SELECT TruckID, PlateNumber FROM Trucks WHERE TruckStatus = 'In Transit'");
+$query->execute();
+
+// Fetch all rows as an associative array
+$results = $query->fetchAll(PDO::FETCH_ASSOC);
+-->
 <!doctype html>
 <html>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery-list</title>
+    <title>Order List</title>
     <link href="./../src/tailwind.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
 
-    <!-- Jquery for datatables sort -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 </head>
 <body>
     <?php include "component/sidebar.php" ?>
@@ -70,72 +70,82 @@ $result = $conn->query($query);
         </div>
 
             <!-- Content here -->
-    <div id="filter" class="py-2 px-10">
-        <select id="statusFilter" class="bg-white border hover:bg-gray-300 text-black py-2 px-4 rounded">
-            <option value="all">All</option>
-            <option value="In transit">In Transit</option>
-            <option value="Pending">Pending</option>
-        </select>
-    </div>     
-        <!--Table -->
-    <div class="flex-1 pr-10 pl-10 h-full">
+            <div class="flex-1 pr-10 pl-10 h-full">
         <div class="h-auto bg-white p-4 rounded-lg shadow-xl border overflow-hidden">
-            <div class="max-h-[450px] overflow-y-auto">
+            <div class="max-h-[650px] overflow-y-auto">
                 <table id="orderTable" class="w-full">
                     <thead class="sticky top-0 bg-white z-10">
                         <tr>
-                            <th class="border-b border-gray-400 px-4 py-2">Order ID</th>
-                            <th class="border-b border-gray-400 px-4 py-2">Sale ID</th>
-                            <th class="border-b border-gray-400 px-4 py-2">Order Date</th>
-                            <th class="border-b border-gray-400 px-4 py-2">Status</th>
-                            <th class="border-b border-gray-400 px-4 py-2" style="pointer-events: none;">Action</th>
+                            <th class="border-b border-gray-400 px-4 py-2">TruckID</th>
+                            <th class="border-b border-gray-400 px-4 py-2">Plate Number</th>
+                            <th class="border-b border-gray-400 px-4 py-2" style="pointer-events: none;">Mark as Delivered</th>
+                            <th class="border-b border-gray-400 px-4 py-2" style="pointer-events: none;" >Show</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <?php
-                            while ($row = $result->fetch(PDO::FETCH_ASSOC))
-                            {
-                            ?>
-                             <!-- detail result -->
-                                <td class="border px-4 py-2"><?php echo $row['DeliveryOrderID']; ?></td>
-                                <td class="border px-4 py-2">#<?php echo $row['SaleID']; ?></td>
-                                <td class="border px-4 py-2"><?php echo $row['DeliveryDate']; ?></td>
-                                <td class="border px-4 py-2"><?php echo $row['DeliveryStatus']; ?></td>
-                                <td class="border px-4 py-2 flex justify-center"> 
-                                    <button class="viewDetailsBtn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl" 
-                                            route='/dlv/viewdetails/id=<?php echo $row['DeliveryOrderID']; ?>'>
-                                        View Details
-                                    </button>   
-                                </td>
-                            </tr>
-                            <?php
-                            }
-                            ?>         
-                    </tbody>               
+                                <tr>
+                                    <!-- detail result -->
+                                    <td class="border px-4 py-2"></td>
+                                    <td class="border px-4 py-2"></td>
+                                    <td class="p-6 whitespace-nowrap">
+                                        <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Delivered</button>
+                                    </td>
+                                    <td class="p-6 whitespace-nowrap">
+                                        <button class="show-popup px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                            Show
+                                        </button>
+                                    </td>
+                                </tr>            
+                    </tbody>                
                 </table>
             </div>
         </div>
     </div>
-
+                                        <!-- The div that will act as the popup -->
+        <div id="truck-info-popup" class="hidden p-4">
+            <!-- Put your truck info here -->
+            <table class="table-auto bg-blue-600 rounded-lg text-white shadow-2xl">
+                <thead>
+                    <tr>
+                        <th class="px-8 py-2 border-b border-gray-300">Order ID</th>
+                        <th class="px-8 py-2 border-b border-gray-300">Sale ID</th>
+                        <th class="px-8 py-2 border-b border-gray-300">Delivery Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="px-8 py-2 border-b border-gray-300">0001</td>
+                        <td class="px-8 py-2 border-b border-gray-300">#20</td>
+                        <td class="px-8 py-2 border-b border-gray-300">2012-30-2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
 
 </main>                     
-        <!-- JS for jquery filter -->                       
-    <script>
-        $(document).ready(function() {
-            var table = $('#orderTable').DataTable({
-                "paging": false,
-                "info": false
-            });
-                // this is for the dropdown filter
-            $('#statusFilter').change(function() {
-                var selectedStatus = $(this).val().toLowerCase();
-                table.column(2).search(selectedStatus === 'all' ? '' : selectedStatus).draw();
-            });
-        });
-    </script>
 
+    <!-- The script that turns the div into a popup and shows it when the button is clicked -->
+    <script>
+    $(document).ready(function() {
+        $("#truck-info-popup").dialog({
+            autoOpen: false,
+            modal: true,
+            closeOnEscape: false,
+            open: function(event, ui) {
+                $(".ui-dialog-titlebar").hide(); // This will hide the title bar
+            }
+        });
+
+        $(".show-popup").click(function() {
+            if ($("#truck-info-popup").dialog("isOpen")) {
+                $("#truck-info-popup").dialog("close");
+            } else {
+                $("#truck-info-popup").dialog("open");
+            }
+        });
+    });
+    </script>
             <!-- JS function for sidebar -->
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', function() {
@@ -150,5 +160,4 @@ $result = $conn->query($query);
     <script  src="./../src/route.js"></script>
     <script  src="./../src/form.js"></script>
 </body>
-
 </html>
